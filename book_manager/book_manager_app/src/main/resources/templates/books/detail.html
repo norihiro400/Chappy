@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>書籍詳細</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">書籍詳細</h1>
+
+        <div th:if="${message}" class="alert alert-success" role="alert">
+            <p th:text="${message}"></p>
+        </div>
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <p th:text="${error}"></p>
+        </div>
+
+        <div th:if="${book}">
+            <p><strong>タイトル:</strong> <span th:text="${book.title}"></span></p>
+            <p><strong>著者:</strong> <span th:text="${book.author}"></span></p>
+            <p><strong>ISBN:</strong> <span th:text="${book.isbn}"></span></p>
+            <p><strong>貸出状況:</strong>
+                <span th:if="${book.available}" class="badge badge-success">貸出可能</span>
+                <span th:unless="${book.available}" class="badge badge-danger">貸出中</span>
+            </p>
+
+            <div th:if="${book.available}">
+                <h2>書籍を貸し出す</h2>
+                <form th:action="@{/books/{bookId}/lend(bookId=${book.id})}" method="post">
+                    <div class="form-group">
+                        <label for="userId">ユーザーID:</label>
+                        <input type="number" class="form-control" id="userId" name="userId" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">貸し出す</button>
+                </form>
+            </div>
+
+            <div th:unless="${book.available}">
+                <h2>書籍を返却する</h2>
+                <form th:action="@{/books/{bookId}/return(bookId=${book.id})}" method="post">
+                    <button type="submit" class="btn btn-success">返却する</button>
+                </form>
+
+                <h2>書籍を予約する</h2>
+                <form th:action="@{/books/{bookId}/reserve(bookId=${book.id})}" method="post">
+                    <div class="form-group">
+                        <label for="reserveUserId">ユーザーID:</label>
+                        <input type="number" class="form-control" id="reserveUserId" name="userId" required>
+                    </div>
+                    <button type="submit" class="btn btn-info">予約する</button>
+                </form>
+
+                <div th:if="${reservations != null and !reservations.empty}">
+                    <h3>予約状況</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item" th:each="reservation : ${reservations}">
+                            <span th:text="${reservation.user.username}"></span> - <span th:text="${#temporals.format(reservation.reservationDate, 'yyyy/MM/dd')}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <a th:href="@{/books}" class="btn btn-secondary mt-3">一覧に戻る</a>
+    </div>
+</body>
+</html>

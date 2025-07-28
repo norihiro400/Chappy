@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>書籍一覧</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">書籍一覧</h1>
+
+        <div th:if="${message}" class="alert alert-success" role="alert">
+            <p th:text="${message}"></p>
+        </div>
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <p th:text="${error}"></p>
+        </div>
+
+        <form th:action="@{/books/search}" method="get" class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="タイトル、著者、ISBNで検索" aria-label="Search" name="keyword" th:value="${keyword}">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">検索</button>
+        </form>
+
+        <a th:href="@{/books/add}" class="btn btn-primary my-3">新しい書籍を追加</a>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>タイトル</th>
+                    <th>著者</th>
+                    <th>ISBN</th>
+                    <th>貸出状況</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="book : ${books}">
+                    <td th:text="${book.id}"></td>
+                    <td th:text="${book.title}"></td>
+                    <td th:text="${book.author}"></td>
+                    <td th:text="${book.isbn}"></td>
+                    <td>
+                        <span th:if="${book.available}" class="badge badge-success">貸出可能</span>
+                        <span th:unless="${book.available}" class="badge badge-danger">貸出中</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/books/{id}(id=${book.id})}" class="btn btn-info btn-sm">詳細</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
