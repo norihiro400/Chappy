@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-    <title>Users</title>
+    <title>ユーザー一覧</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+
 <body>
     <div class="container">
-        <h1 class="my-4">Users</h1>
-        <a th:href="@{/users/add}" class="btn btn-primary mb-3" sec:authorize="hasAuthority('TEACHER')">Add User</a>
+        <h1 class="my-4">ユーザー一覧</h1>
+        <a th:href="@{/users/add}" class="btn btn-primary mb-3" sec:authorize="hasAuthority('TEACHER')">ユーザーを追加</a>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
-                    <th>Student ID</th>
+                    <th>氏名</th>
+                    <th>ID</th>
                     <th>Email</th>
-                    <th>Role</th>
-                    <th>Actions</th>
+                    <th>ユーザー種別</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,13 +29,14 @@
                     <td th:text="${user.email}"></td>
                     <td th:text="${user.role}"></td>
                     <td>
-                        <a th:href="@{/users/{id}(id=${user.id})}" class="btn btn-info btn-sm">Detail</a>
-                        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-warning btn-sm" sec:authorize="hasAuthority('TEACHER')">Edit</a>
-                        <a th:href="@{/users/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm" sec:authorize="hasAuthority('TEACHER')">Delete</a>
+                        <a th:href="@{/users/{id}(id=${user.id})}" class="btn btn-info btn-sm">詳細</a>
+                        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-warning btn-sm" sec:authorize="hasAuthority('TEACHER')">編集</a>
+                        <a th:href="@{/users/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm" sec:authorize="hasAuthority('TEACHER')">削除</a>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </body>
+
 </html>

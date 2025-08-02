@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>User Detail</title>
+    <title>ユーザーの詳細</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container">
-        <h1 class="my-4">User Detail</h1>
+        <h1 class="my-4">ユーザーの詳細</h1>
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">User Information</h5>
@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <h2 class="my-4">Lendings</h2>
+        <h2 class="my-4">貸出中の書籍</h2>
         <div th:if="${user.lendings != null and !user.lendings.empty}">
             <table class="table table-striped">
                 <thead>
@@ -43,7 +43,7 @@
             <p>No books currently lent.</p>
         </div>
 
-        <h2 class="my-4">Reservations</h2>
+        <h2 class="my-4">予約中の書籍</h2>
         <div th:if="${user.reservations != null and !user.reservations.empty}">
             <table class="table table-striped">
                 <thead>

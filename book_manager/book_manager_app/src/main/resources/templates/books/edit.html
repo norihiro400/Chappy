@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Edit Book</title>
+    <title>書籍情報の編集</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container">
-        <h1 class="my-4">Edit Book</h1>
+        <h1 class="my-4">書籍情報の編集</h1>
         <form th:action="@{/books/edit/{id}(id=${book.id})}" th:object="${book}" method="post">
             <div class="form-group">
-                <label for="title">Title:</label>
+                <label for="title">タイトル:</label>
                 <input type="text" class="form-control" id="title" th:field="*{title}" required/>
             </div>
             <div class="form-group">
-                <label for="author">Author:</label>
+                <label for="author">著者:</label>
                 <input type="text" class="form-control" id="author" th:field="*{author}" required/>
             </div>
             <div class="form-group">
@@ -24,8 +24,8 @@
                 <input type="checkbox" class="form-check-input" id="available" th:field="*{available}"/>
                 <label class="form-check-label" for="available">Available</label>
             </div>
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a th:href="@{/books}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">更新</button>
+            <a th:href="@{/books}" class="btn btn-secondary">キャンセル</a>
         </form>
     </div>
 </body>
