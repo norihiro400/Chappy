@@ -11,7 +11,7 @@ import lombok.Data;
 @jakarta.persistence.Table(name = "app_user") // "user" は予約語のためテーブル名を変更
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String username;
     private String email;
