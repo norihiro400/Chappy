@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>書籍詳細</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -24,29 +24,21 @@
                 <span th:unless="${book.available}" class="badge badge-danger">貸出中</span>
             </p>
 
-            <div th:if="${book.available}">
-                <h2>書籍を貸し出す</h2>
+            <div th:if="${book.available}" sec:authorize="isAuthenticated()">
+                <h2>書籍を借りる</h2>
                 <form th:action="@{/books/{bookId}/lend(bookId=${book.id})}" method="post">
-                    <div class="form-group">
-                        <label for="userId">ユーザーID:</label>
-                        <input type="number" class="form-control" id="userId" name="userId" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">貸し出す</button>
+                    <button type="submit" class="btn btn-primary">借りる</button>
                 </form>
             </div>
 
             <div th:unless="${book.available}">
                 <h2>書籍を返却する</h2>
-                <form th:action="@{/books/{bookId}/return(bookId=${book.id})}" method="post">
+                <form th:action="@{/books/{bookId}/return(bookId=${book.id})}" method="post" th:if="${currentLending != null and currentLending.user.email == #authentication.name}">
                     <button type="submit" class="btn btn-success">返却する</button>
                 </form>
 
-                <h2>書籍を予約する</h2>
-                <form th:action="@{/books/{bookId}/reserve(bookId=${book.id})}" method="post">
-                    <div class="form-group">
-                        <label for="reserveUserId">ユーザーID:</label>
-                        <input type="number" class="form-control" id="reserveUserId" name="userId" required>
-                    </div>
+                <h2 sec:authorize="isAuthenticated()">書籍を予約する</h2>
+                <form th:action="@{/books/{bookId}/reserve(bookId=${book.id})}" method="post" sec:authorize="isAuthenticated()">
                     <button type="submit" class="btn btn-info">予約する</button>
                 </form>
 
@@ -54,13 +46,15 @@
                     <h3>予約状況</h3>
                     <ul class="list-group">
                         <li class="list-group-item" th:each="reservation : ${reservations}">
-                            <span th:text="${reservation.user.username}"></span> - <span th:text="${#temporals.format(reservation.reservationDate, 'yyyy/MM/dd')}"></span>
+                            <span th:text="${reservation.user.name}"></span> - <span th:text="${#temporals.format(reservation.reservationDate, 'yyyy/MM/dd')}"></span>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
         <a th:href="@{/books}" class="btn btn-secondary mt-3">一覧に戻る</a>
+        <a th:href="@{/books/edit/{id}(id=${book.id})}" class="btn btn-warning mt-3" sec:authorize="hasAuthority('TEACHER')">編集</a>
+        <a th:href="@{/books/delete/{id}(id=${book.id})}" class="btn btn-danger mt-3" sec:authorize="hasAuthority('TEACHER')">削除</a>
     </div>
 </body>
 </html>

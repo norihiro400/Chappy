@@ -44,9 +44,9 @@ public class BookService {
     }
 
     @Transactional
-    public Lending lendBook(Long bookId, Long userId) {
+    public Lending lendBook(Long bookId, String email) {
         Book book = bookRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email);
 
         if (!book.isAvailable()) {
             throw new RuntimeException("Book is not available for lending");
@@ -65,12 +65,17 @@ public class BookService {
     }
 
     @Transactional
-    public Lending returnBook(Long bookId) {
+    public Lending returnBook(Long bookId, String email) {
         Book book = bookRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
         Lending lending = lendingRepository.findByBookIdAndReturnDateIsNull(bookId);
+        User currentUser = userRepository.findByEmail(email);
 
         if (lending == null) {
             throw new RuntimeException("Book is not currently lent out");
+        }
+
+        if (!lending.getUser().equals(currentUser)) {
+            throw new RuntimeException("You are not authorized to return this book.");
         }
 
         lending.setReturnDate(LocalDate.now());
@@ -90,17 +95,23 @@ public class BookService {
     }
 
     @Transactional
-    public Reservation reserveBook(Long bookId, Long userId) {
+    public Reservation reserveBook(Long bookId, String email) {
         Book book = bookRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email);
 
-        if (reservationRepository.existsByBookIdAndUserId(bookId, userId)) {
+        if (reservationRepository.existsByBookIdAndUserId(bookId, user.getId())) {
             throw new RuntimeException("You have already reserved this book.");
         }
 
         // 貸出中の場合のみ予約可能
         if (book.isAvailable()) {
             throw new RuntimeException("Book is currently available, no need to reserve.");
+        }
+
+        // 既に借りている場合は予約不可
+        Lending currentLending = lendingRepository.findByBookIdAndUserIdAndReturnDateIsNull(bookId, user.getId());
+        if (currentLending != null) {
+            throw new RuntimeException("You are currently lending this book, cannot reserve.");
         }
 
         Reservation reservation = new Reservation();
@@ -127,8 +138,8 @@ public class BookService {
         return userRepository.findById(userId).orElse(null);
     }
 
-    public User findUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findUserByName(String name) {
+        return userRepository.findByName(name);
     }
 
     public User saveUser(User user) {
@@ -137,5 +148,9 @@ public class BookService {
 
     public Book saveBook(Book book) {
         return bookRepository.save(book);
+    }
+
+    public void deleteBookById(Long id) {
+        bookRepository.deleteById(id);
     }
 }

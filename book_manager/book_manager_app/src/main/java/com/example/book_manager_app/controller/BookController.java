@@ -1,16 +1,15 @@
 package com.example.book_manager_app.controller;
 
 import com.example.book_manager_app.domain.Book;
-import com.example.book_manager_app.domain.Lending;
-import com.example.book_manager_app.domain.Reservation;
-import com.example.book_manager_app.domain.User;
 import com.example.book_manager_app.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -52,9 +51,9 @@ public class BookController {
     }
 
     @PostMapping("/{bookId}/lend")
-    public String lendBook(@PathVariable Long bookId, @RequestParam Long userId, RedirectAttributes redirectAttributes) {
+    public String lendBook(@PathVariable Long bookId, Principal principal, RedirectAttributes redirectAttributes) {
         try {
-            bookService.lendBook(bookId, userId);
+            bookService.lendBook(bookId, principal.getName());
             redirectAttributes.addFlashAttribute("message", "書籍を貸し出しました。");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -63,9 +62,9 @@ public class BookController {
     }
 
     @PostMapping("/{bookId}/return")
-    public String returnBook(@PathVariable Long bookId, RedirectAttributes redirectAttributes) {
+    public String returnBook(@PathVariable Long bookId, Principal principal, RedirectAttributes redirectAttributes) {
         try {
-            bookService.returnBook(bookId);
+            bookService.returnBook(bookId, principal.getName());
             redirectAttributes.addFlashAttribute("message", "書籍を返却しました。");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -74,9 +73,9 @@ public class BookController {
     }
 
     @PostMapping("/{bookId}/reserve")
-    public String reserveBook(@PathVariable Long bookId, @RequestParam Long userId, RedirectAttributes redirectAttributes) {
+    public String reserveBook(@PathVariable Long bookId, Principal principal, RedirectAttributes redirectAttributes) {
         try {
-            bookService.reserveBook(bookId, userId);
+            bookService.reserveBook(bookId, principal.getName());
             redirectAttributes.addFlashAttribute("message", "書籍を予約しました。");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -84,25 +83,43 @@ public class BookController {
         return "redirect:/books/" + bookId;
     }
 
-    // ユーザー登録・選択用の仮実装
-    @GetMapping("/users")
-    public String listUsers(Model model) {
-        // 仮のユーザーリスト。実際には認証機能などが必要
-        model.addAttribute("users", bookService.saveUser(new User())); // ダミーユーザー作成
-        return "users/list";
-    }
-
     @GetMapping("/add")
+    @PreAuthorize("hasAuthority('TEACHER')")
     public String showAddBookForm(Model model) {
         model.addAttribute("book", new Book());
         return "books/add";
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('TEACHER')")
     public String addBook(@ModelAttribute Book book, RedirectAttributes redirectAttributes) {
         book.setAvailable(true);
         bookService.saveBook(book);
         redirectAttributes.addFlashAttribute("message", "書籍を追加しました。");
+        return "redirect:/books";
+    }
+
+    @GetMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('TEACHER')")
+    public String showEditBookForm(@PathVariable Long id, Model model) {
+        bookService.findBookById(id).ifPresent(book -> model.addAttribute("book", book));
+        return "books/edit";
+    }
+
+    @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('TEACHER')")
+    public String editBook(@PathVariable Long id, @ModelAttribute Book book, RedirectAttributes redirectAttributes) {
+        book.setId(id);
+        bookService.saveBook(book);
+        redirectAttributes.addFlashAttribute("message", "書籍情報を更新しました。");
+        return "redirect:/books";
+    }
+
+    @GetMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('TEACHER')")
+    public String deleteBook(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        bookService.deleteBookById(id);
+        redirectAttributes.addFlashAttribute("message", "書籍を削除しました。");
         return "redirect:/books";
     }
 }

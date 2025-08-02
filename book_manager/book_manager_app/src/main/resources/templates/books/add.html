@@ -22,9 +22,8 @@
                 <input type="text" class="form-control" id="isbn" th:field="*{isbn}" required>
             </div>
             <button type="submit" class="btn btn-primary">追加</button>
+            <a th:href="@{/books}" class="btn btn-secondary">一覧に戻る</a>
         </form>
-
-        <a th:href="@{/books}" class="btn btn-secondary mt-3">一覧に戻る</a>
     </div>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>書籍一覧</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -20,7 +20,7 @@
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">検索</button>
         </form>
 
-        <a th:href="@{/books/add}" class="btn btn-primary my-3">新しい書籍を追加</a>
+        <a th:href="@{/books/add}" class="btn btn-primary my-3" sec:authorize="hasAuthority('TEACHER')">新しい書籍を追加</a>
 
         <table class="table table-striped">
             <thead>
@@ -45,6 +45,8 @@
                     </td>
                     <td>
                         <a th:href="@{/books/{id}(id=${book.id})}" class="btn btn-info btn-sm">詳細</a>
+                        <a th:href="@{/books/edit/{id}(id=${book.id})}" class="btn btn-warning btn-sm" sec:authorize="hasAuthority('TEACHER')">編集</a>
+                        <a th:href="@{/books/delete/{id}(id=${book.id})}" class="btn btn-danger btn-sm" sec:authorize="hasAuthority('TEACHER')">削除</a>
                     </td>
                 </tr>
             </tbody>

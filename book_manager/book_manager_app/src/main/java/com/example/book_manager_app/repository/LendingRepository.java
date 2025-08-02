@@ -12,4 +12,5 @@ public interface LendingRepository extends JpaRepository<Lending, Long> {
     List<Lending> findByReturnDateIsNull(); // 返却されていない貸出
     List<Lending> findByReturnDueDateBeforeAndReturnDateIsNull(LocalDate date);
     Lending findByBookIdAndReturnDateIsNull(Long bookId);
+    Lending findByBookIdAndUserIdAndReturnDateIsNull(Long bookId, Long userId);
 }
