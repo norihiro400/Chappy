@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit User</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Edit User</h1>
+        <form th:action="@{/users/edit/{id}(id=${user.id})}" th:object="${user}" method="post">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" required/>
+            </div>
+            <div class="form-group">
+                <label for="studentId">Student ID:</label>
+                <input type="text" class="form-control" id="studentId" th:field="*{studentId}"/>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" th:field="*{email}" required/>
+            </div>
+            <div class="form-group">
+                <label for="password">Password (leave blank to keep current):</label>
+                <input type="password" class="form-control" id="password" th:field="*{password}"/>
+            </div>
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select class="form-control" id="role" th:field="*{role}">
+                    <option th:each="role : ${T(com.example.book_manager_app.domain.Role).values()}" 
+                            th:value="${role}" th:text="${role}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a th:href="@{/users}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

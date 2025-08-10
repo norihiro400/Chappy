@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>ユーザーの詳細</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">ユーザーの詳細</h1>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">User Information</h5>
+                <p class="card-text"><strong>ID:</strong> <span th:text="${user.id}"></span></p>
+                <p class="card-text"><strong>Name:</strong> <span th:text="${user.name}"></span></p>
+                <p class="card-text"><strong>Student ID:</strong> <span th:text="${user.studentId}"></span></p>
+                <p class="card-text"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                <p class="card-text"><strong>Role:</strong> <span th:text="${user.role}"></span></p>
+            </div>
+        </div>
+
+        <h2 class="my-4">貸出中の書籍</h2>
+        <div th:if="${user.lendings != null and !user.lendings.empty}">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Lending Date</th>
+                        <th>Return Due Date</th>
+                        <th>Return Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="lending : ${user.lendings}">
+                        <td th:text="${lending.book.title}"></td>
+                        <td th:text="${lending.lendingDate}"></td>
+                        <td th:text="${lending.returnDueDate}"></td>
+                        <td th:text="${lending.returnDate}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${user.lendings != null and !user.lendings.empty}">
+            <p>No books currently lent.</p>
+        </div>
+
+        <h2 class="my-4">予約中の書籍</h2>
+        <div th:if="${user.reservations != null and !user.reservations.empty}">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Reservation Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="reservation : ${user.reservations}">
+                        <td th:text="${reservation.book.title}"></td>
+                        <td th:text="${reservation.reservationDate}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${user.reservations != null and !user.reservations.empty}">
+            <p>No books currently reserved.</p>
+        </div>
+
+        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-warning mt-3" sec:authorize="hasAuthority('TEACHER')">Edit User</a>
+        <a th:href="@{/users}" class="btn btn-secondary mt-3">Back to User List</a>
+    </div>
+</body>
+</html>
